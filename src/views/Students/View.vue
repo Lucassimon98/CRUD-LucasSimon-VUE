@@ -31,10 +31,10 @@
                             <td>{{ student.phone }}</td>
                             <td>{{ student.created_at }}</td>
                             <td>
-                                <RouterLink to="/" class="btn btn-success float-end">
+                                <RouterLink :to="{path:'/students/'+student.id+'/edit'}" class="btn btn-success me-3">
                                     Edit
                                 </RouterLink>
-                                <button type="button" class="btn btn-danger float-end">
+                                <button type="button" class="btn btn-danger">
                                     Delete
                                 </button>
                             </td>

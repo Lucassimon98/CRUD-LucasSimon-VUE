@@ -3,7 +3,7 @@
     <div class="container mt-5">
         <div class="card">
             <div class="card-header">
-                <h4>Add Students</h4>
+                <h4>Edit Students</h4>
             </div>
             <div class="card-body">
 
@@ -30,7 +30,7 @@
                     <input type="text" v-model="model.student.phone" class="form-control">
                 </div>
                 <div class="mb-3">
-                    <button type="button" @click="saveStudent" class="btn btn-primary">Save</button>
+                    <button type="button" @click="updateStudent" class="btn btn-primary">Update</button>
                 </div>
             </div>
         </div>
@@ -41,9 +41,10 @@
 <script>
 import axios from 'axios'
 export default {
-    name: 'studentCreate',
+    name: 'studentEdit',
     data() {
         return {
+            studentId: '',
             errorList: '',
             model: {
                 student: {
@@ -55,21 +56,35 @@ export default {
             }
         }
     },
+    mounted() {
+        // console.log(this.$route.params.id);
+        this.studentId = this.$route.params.id;
+        this.getStudentData(this.$route.params.id);
+    },
     methods: {
-
-
-        saveStudent() {
+        
+        getStudentData(studentId) {
             var $this = this;
-            axios.post('http://127.0.0.1:8000/api/students', this.model.student).then(res => {
+            axios.get(`http://127.0.0.1:8000/api/students/${studentId}/edit`).then(res => {
+                // console.log(res.data.student);
+                
+                this.model.student = res.data.student
+            })
+            .catch(function (error) {
+                if (error.response) {
+                    if(error. response.status == 404) {
+                        alert(error.response.data.message);
+                    }
+                }
+            });
+        },
+            
+        updateStudent() {
+            var $this = this;
+            axios.put(`http://127.0.0.1:8000/api/students/${this.studentId}/edit`, this.model.student).then(res => {
                 // console.log(res)
                 alert(res.data.message);
 
-                this.model.student = {
-                    name: '',
-                    email: '',
-                    course: '',
-                    phone: ''
-                }
                 this.errorList = '';
             })
             .catch(function (error) {
@@ -77,7 +92,10 @@ export default {
                     if(error. response.status == 422) {
                         $this.errorList = error.response.data.errors
                     }
-                console.error(error.response.data);
+                    if(error. response.status == 404) {
+                        alert(error.response.data.message);
+                    }
+                // console.error(error.response.data);
                 // console.error(error.response.status);
                 // console.error(error.response.headers);
                 } else if (error.request) {
